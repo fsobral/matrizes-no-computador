@@ -1,1 +1,1 @@
-Clique [aqui](index.ipynb) para acessar o menu principal do minicurso.
+Clique [aqui](codes/index.ipynb) para acessar o menu principal do minicurso.
