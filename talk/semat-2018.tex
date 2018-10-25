@@ -179,8 +179,10 @@
 
 \begin{frame}{Abrindo o \textit{notebook}}
 
-figura aqui
-  
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{figures/notebook.png}
+  \end{center}
+
 \end{frame}
 
 \begin{frame}[fragile]{Vetores}
@@ -280,12 +282,331 @@ end
 
 \end{frame}
 
+\begin{frame}{Memória}
+
+  \begin{onlyenv}<1>
+    \begin{itemize}
+    \item Ao criarmos um vetor, um espaço da memória do computador é
+      reservado
+    \item Quando o vetor não é mais usado, o GC (\textit{Garbage
+        Colector}) entra em ação
+    \item Criação $>$ Destruição pelo GC $\Rightarrow$ Travamento
+    \item Ordem de velocidade de acesso
+      \begin{center}
+        HD $<$ Memória RAM $<$ \emph{Cache} do processador
+      \end{center}
+    \item Ordem de espaço disponível
+      \begin{center}
+        HD (TB) $>$ Memória RAM (GB) $>$ \emph{Cache} do processador
+        (MB)
+      \end{center}
+    \end{itemize}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
+    \begin{itemize}
+    \item Matriz $1000\times 1000$ do tipo \code{Float64} ocupa
+      \[
+      \frac{1000 \times 1000 \times 8}{1024} \approx 8\text{MB}
+      \]
+
+    \item Matriz $10000 \times 10000$: 800MB
+
+    \end{itemize}
+  \end{onlyenv}
+
+\end{frame}
+
+\begin{frame}{Acessando posições próximas}
+
+  Ao acessar a posição $i$ de um vetor ou $(i, j)$ de uma matriz o
+  processador também acessa posições \textcolor{darkgreen}{vizinhas}
+  com maior velocidade!
+
+  \begin{itemize}
+  \item Uso do \emph{cache}
+
+  \item Se acessou \code{v[5]}, então \code{v[4]} e \code{v[6]} são
+    acessadas mais rapidamente que \code{v[20]}
+
+  \item Se acessou \code{M[3, 3]}, então \code{M[2, 3]} e \code{M[4,
+      3]} são acessados mais rapidamente que \code{M[3, 4]}
+
+    \[
+    \begin{bmatrix}
+      1 & 2 & 3 \\
+      4 & 5 & 6 \\
+      7 & 8 & 9
+    \end{bmatrix}
+    \quad \Rightarrow \quad
+    \begin{bmatrix}
+      1 & 4 & 7 & 2 & 5 & 9 & 3 & 6 & 9
+    \end{bmatrix}
+    \]
+
+  \item Julia é \alert{Orientada a colunas}
+  \end{itemize}
+  
+\end{frame}
+
 
 \section{Multiplicação de matrizes e vetores}
 
+\begin{frame}{Duas interpretações}
+  
+  \begin{onlyenv}<1-2>
+    Sejam $A \in \R^{m \times n}$ e $v \in \R^n$. Existem duas formas
+    de interpretarmos $u = A v$:
+
+    \begin{itemize}
+    \item Produto escalar com as \textbf{linhas} de $A$:
+      \[
+      u =
+      \begin{bmatrix}
+        \alert<1>{a_{11} v_1} + \cdots + \alert<1>{a_{1n} v_n}\\
+        a_{21} v_1 + \cdots + a_{2n} v_n\\
+        \vdots \\
+        a_{m1} v_1 + \cdots + a_{mn} v_n
+      \end{bmatrix}
+      =
+      \begin{bmatrix}
+        \alert<1>{A_1 \cdot v} \\
+        \vdots \\
+        A_m \cdot v
+      \end{bmatrix}
+      \]
+
+    \item Combinação linear das \textbf{colunas} de $A$:
+      \[
+      u =
+      \begin{bmatrix}
+        \alert<2>{a_{11} v_1} + \cdots + a_{1n} v_n\\
+        \alert<2>{a_{21} v_1} + \cdots + a_{2n} v_n\\
+        \vdots \\
+        \alert<2>{a_{m1} v_1} + \cdots + a_{mn} v_n
+      \end{bmatrix}
+      = \alert<2>{A^1 v_1} + \cdots + A^n v_n
+      \]
+    \end{itemize}
+  \end{onlyenv}
+
+  \begin{onlyenv}<3>
+
+    \begin{itemize}
+    \item Produto escalar
+      \[
+      u_i = a_{i1} v_1 + \cdots + a_{in} v_n
+      \]
+      Os elementos de $A$ não estão próximos uns dos outros!
+
+    \item Combinação linear
+      \[
+      \begin{aligned}
+        u_1 & = u_1 + a_{1j} v_j\\
+        & \vdots \\
+        u_m &  = u_m + a_{mj} v_j
+      \end{aligned}
+      \]
+      Os elementos de $A$ estão próximos uns dos outros!
+    \end{itemize}
+    
+  \end{onlyenv}
+
+\end{frame}
+
 \section{Multiplicação de matrizes}
 
+\begin{frame}{Três interpretações}
+
+  Sejam $A \in \R^{m \times p}$ e $B \in \R^{p \times n}$. Existem
+  três formas de interpretarmos $C = A \cdot B$:
+
+  \begin{itemize}
+  \item<only@1> Produto escalar
+    \[
+    \begin{split}
+      C & =
+      \begin{bmatrix}
+        \alert<1>{a_{11} b_{11} + \cdots + a_{1p} b_{p1}} & \cdots &
+        a_{11} b_{1n} + \cdots + a_{1p} b_{pn}\\
+        & \vdots & \\
+        a_{m1} b_{11} + \cdots + a_{mp} b_{p1} & \cdots & a_{m1}
+        b_{1n} + \cdots + a_{mp} b_{pn}
+      \end{bmatrix} \\
+      & =
+      \begin{bmatrix}
+        \alert<1>{A_1 B^1} & \cdots & A_1 B^n \\
+        & \vdots & \\
+        A_m B^1 & \cdots & A_m B^n
+      \end{bmatrix}
+    \end{split}
+    \]
+
+    \item<only@2-3> Combinação linear de linhas ou colunas
+    \[
+    \begin{split}
+      C & =
+      \begin{bmatrix}
+        \alert<2-3>{a_{11} b_{11} + \cdots + a_{1p} b_{p1}} & \alert<2>{\cdots} &
+        \alert<2>{a_{11} b_{1n} + \cdots + a_{1p} b_{pn}}\\
+        & \alert<3>{\vdots} & \\
+        \alert<3>{a_{m1} b_{11} + \cdots + a_{mp} b_{p1}} & \cdots & a_{m1}
+        b_{1n} + \cdots + a_{mp} b_{pn}
+      \end{bmatrix} \\
+      & =
+      \begin{bmatrix}
+        \alert<2>{A_1 B} \\
+        \vdots \\
+        A_m B
+      \end{bmatrix}
+      =
+      \begin{bmatrix}
+        \alert<3>{A B^1} & \cdots & A B^n \\
+      \end{bmatrix}
+    \end{split}
+    \]
+
+  \item<only@4> Soma de matrizes de posto 1 (\textit{outer product})
+    \[
+    \begin{split}
+      C & =
+      \begin{bmatrix}
+        \alert<4>{a_{11} b_{11}} + \cdots + a_{1p} b_{p1} & \cdots &
+        \alert<4>{a_{11} b_{1n}} + \cdots + a_{1p} b_{pn}\\
+        & \vdots & \\
+        \alert<4>{a_{m1} b_{11}} + \cdots + a_{mp} b_{p1} & \cdots &
+        \alert<4>{a_{m1} b_{1n}} + \cdots + a_{mp} b_{pn}
+      \end{bmatrix} \\
+      & =
+      \alert<4>{
+        \begin{bmatrix}
+          a_{11} b_{11} & \cdots & a_{11} b_{1n} \\
+          & \vdots & \\
+          a_{m1} b_{11} & \cdots & a_{m1} b_{1n}
+        \end{bmatrix}
+      } + \cdots + 
+      \begin{bmatrix}
+        a_{1p} b_{1p} & \cdots & a_{1p} b_{pn} \\
+        & \vdots & \\
+        a_{mp} b_{1p} & \cdots & a_{mp} b_{pn}
+      \end{bmatrix}
+      \\
+      & = \alert<4>{A^1 B_1} + \cdots + A^p B_p
+    \end{split}
+    \]
+
+  \end{itemize}
+  
+\end{frame}
+
 \section{Problema prático: matrizes esparsas}
+
+\begin{frame}{Matrizes diagonais}
+
+  Seja $D \in \R^{n \times n}$ uma matriz diagonal
+  \[
+  D =
+  \begin{bmatrix}
+    d_{11} & 0 & 0 & \cdots & 0 \\
+    0 & d_{22} & 0 & \cdots & 0 \\
+      & & \ddots & & \\
+      & & & \ddots & \\
+    0 & 0 & 0 & \cdots & d_{nn}
+  \end{bmatrix}
+  \]
+
+  \begin{itemize}
+  \item $D$ pode ser armazenada no computador em um vetor
+    \[
+    d =
+    \begin{bmatrix}
+      d_{11} & d_{22} & \cdots & d_{nn}
+    \end{bmatrix}
+    \]
+
+  \item Economizamos $n^2 - n$ posições na memória!
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Multiplicação}
+  
+  \begin{itemize}
+  \item $D \in \R^{n \times n}$ diagonal e $v \in \R^n$
+    \[
+    D v =
+    \begin{bmatrix}
+      d_{11} v_1 \\
+      \vdots \\
+      d_{nn} v_n
+    \end{bmatrix}
+    \]
+
+  \item $D \in \R^{n \times n}$ diagonal e $A \in \R^{n \times n}$
+    qualquer
+    \[
+    D \cdot A =
+    \begin{bmatrix}
+      d_{11} a_{11} & \cdots & d_{11} a_{1n} \\
+      d_{22} a_{21} & \cdots & d_{22} a_{2n} \\
+      & \vdots & \\
+      d_{nn} a_{n1} & \cdots & d_{nn} a_{nn} \\      
+    \end{bmatrix}
+    \]
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Matriz esparsa qualquer}
+
+  \begin{onlyenv}<1>
+    Considere a matriz
+    \[
+    A =
+    \begin{bmatrix}
+      4 & 0 & 2 & 0 & 0 \\
+      0 & 5 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 0 & 0 \\
+    \end{bmatrix}
+    \]
+  
+    Como $A$ tem muitos zeros, podemos armazená-la de uma forma
+    inteligente através de 3 vetores:
+
+    \begin{itemize}
+    \item \code{vi[k]} guarda a linha do $k$-ésimo elemento não nulo
+    \item \code{vj[k]} guarda a coluna do $k$-ésimo elemento não nulo
+    \item \code{v[k]} guarda o valor do $k$-ésimo elemento não nulo
+    \end{itemize}
+
+    \[
+    \begin{aligned}
+      \text{\code{vi}} & = [1, 2, 1] \\
+      \text{\code{vj}} & = [1, 2, 3] \\
+      \text{\code{v}} & = [4, 5, 2]
+    \end{aligned}
+    \]
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
+    
+    No caso de $A \in \R^{m \times n}$ geral, temos que, se
+    \code{vi[k]} $= i$, \code{vj[k]} $= j$ e \code{v[k]} $= x$, então
+    \[
+    a_{ij} = x
+    \]
+
+    \code{length(v)} indica quantos elementos não nulos há em $A$.
+    \vfill
+    \begin{center}
+      \large \alert{Como implementar os produtos?}
+    \end{center}
+
+  \end{onlyenv}
+
+\end{frame}
 
 \begin{frame}[plain, noframenumbering]
   \vfill
@@ -297,950 +618,8 @@ end
   \vfill
   \vfill
   \begin{center} \url{fncsobral@uem.br} \end{center}
-\end{frame}
-\end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\begin{frame}[plain]
-  \begin{onlyenv}<1>
-    \begin{center}
-      \includegraphics[width=0.7\textwidth]{figures/jacek.jpg}\\
-      Jacek
-    \end{center}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{center}
-      \includegraphics[width=0.7\textwidth]{figures/ergo.jpeg}\\
-      ERGO Group
-    \end{center}
-  \end{onlyenv}
-\end{frame}
-
-\begin{frame}{The problem}
-
-  \begin{onlyenv}<1>
-    Suppose that we are interested in solving the following
-    optimization problem
-    \[
-    \begin{array}{ll}
-      \underset{x \in \R^n}{\mbox{Minimize}} & c^T x \\
-      \mbox{s. t.} & A x  = b \\
-                                             & x \ge 0
-    \end{array}
-    \]
-    where $c \in \R^n$, $b \in \R^m$ and $A \in \R^{m \times n}$.
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{center}
-      \parbox{\textwidth}{ %
-        \begin{beamercolorbox}[wd=0.9\textwidth, center, sep=3pt,
-          rounded=true]{attention box}
-          \[
-          \begin{aligned}
-            c^T x & \doteq \sum_{j = 1}^n c_j x_j\\
-            x \ge 0 & \Rightarrow x_j \ge 0 \quad j = 1, \dots, n \\
-            A x = b & \Rightarrow \sum_{j = 1}^n a_{ij} x_j = b_i
-            \quad i = 1,\dots, m
-          \end{aligned}
-          \]
-        \end{beamercolorbox}
-      }
-    \end{center}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{Interior Point Methods}
-  
-  \begin{onlyenv}<1>
-    \begin{itemize}
-    \item Use \alert{logarithmic barrier} to handle \alert{inequality
-        constraints}
-    \item Try to satisfy the first order optimality conditions of
-      problem
-      \[
-      \begin{array}{ll}
-        \mbox{Minimize} & c^T x - \alert{\mu \sum_{i = 1}^n \ln(x_i)} \\
-        \mbox{s. t.} & A x  = b
-      \end{array}
-      \]
-      for $\mu \to 0$.
-    \item This approach leads to a relaxation on the optimality
-      conditions
-      \[
-      \left\{
-        \begin{array}{rrcrcr}
-          & A^T \lambda & + & z  & = & c \\
-          Ax & & &            & = & b \\
-          & & & X Z e & = & \alert{\mu}
-        \end{array}
-      \right.
-      \]
-      \alert{$x, z > 0$}, where $X,Z \in \R^{n \times n}$ are diagonal
-      matrices, $e = (1, 1, \dots, 1)$ and $\lambda \in \R^m$ are the
-      Lagrange multipliers.
-    \end{itemize}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{itemize}
-    \item Let us define the function
-      \[
-      F(x, \lambda, z) =
-      \begin{bmatrix}
-        A^T \lambda + z - c \\ A x - b \\ X Z e
-      \end{bmatrix}
-      \]
-      and its Jacobian
-      \[
-      J(x, \lambda, z) = 
-      \begin{bmatrix}
-        0 & A^T & I \\
-        A & 0   & 0 \\
-        Z & 0   & X \\
-      \end{bmatrix}
-      \]
-
-    \item First order optimality conditions of the problem
-      \[
-      F(x^*, \lambda^*, z^*) =
-      \begin{bmatrix}
-        0\\ 0\\ 0
-      \end{bmatrix},
-      x^*, z^* \ge 0
-      \]
-
-    % \item At iteration $k$, we have point $(\xysk{k})$ and define
-    %   \[
-    %   F_k = F(\xysk{k}) \qquad \text{and} \qquad J_k = J(\xysk{k})
-    %   \]
-    \end{itemize}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{Conceptual Primal-Dual IP iteration}
-
-  \begin{itemize}
-  \item Let $(\xysk{k})$, $x_k, z_k > 0$, and $\mu_k > 0$
-  \item $(\xysk{k + 1})$ is the approximate solution of the relaxed
-    system
-    \[
-    F(x, \lambda, z) =
-    \begin{bmatrix}
-      0 \\ 0 \\ \alert{\sigma \mu_k}
-    \end{bmatrix}
-    \quad \text{and} \quad x, z > 0,
-    \]
-    $\sigma \in (0,1)$, obtained by \textcolor{darkgreen}{one step} of
-    the Newton method, ie.
-    \[
-    \begin{aligned}
-      % F_k + J_k
-      % \begin{bmatrix}
-      %   \dxk \\ \dyk \\ \dsk
-      % \end{bmatrix}
-      % & =
-      % \begin{bmatrix}
-      %   0 \\ 0 \\ \sigma \mu_k
-      % \end{bmatrix}
-      % \iff \\
-      \begin{bmatrix}
-        0   & A^T & I   \\
-        A   & 0   & 0   \\
-        Z^k & 0   & X^k \\
-      \end{bmatrix}
-      \begin{bmatrix}
-        \dxk \\ \dyk \\ \dsk
-      \end{bmatrix}
-      & = \alert{v}
-      % \begin{bmatrix}
-      %   b - Ax^k \\ A^T y^k + s^k - c \\ \sigma \mu_k e - X^k S^k e
-      % \end{bmatrix}
-    \end{aligned}
-    \]
-    
-  \item
-    $(\xysk{k + 1}) = (\xysk{k}) + (\alpha_P \dxk, \alpha_D \dyk,
-    \alpha_D \dsk)$
-    % ,
-    % were $\alpha_P, \alpha_D \in (0,1)$ are selected such that
-    % $x^{k + 1}, s^{k + 1} \ge 0$.
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}{Solving the linear system}
-
-  Solving the linear system is the \alert{most expensive} part of an
-  IP iteration.
-
-  \begin{onlyenv}<1>
-    \begin{itemize}
-    \item[] \textbf{Unreduced Matrix}
-      \[
-      \begin{aligned}
-        \begin{matrix}
-          (x) & (\lambda) & (z)\ \ \\
-        \end{matrix}\\
-        \begin{bmatrix}
-          0   & A^T & I   \\
-          A   & 0   & 0   \\
-          Z^k & 0   & X^k \\
-        \end{bmatrix}
-      \end{aligned}
-      \]
-    
-    \item[]
-    \item Good \textcolor{darkgreen}{sparsity structure}
-    \item Changes \textcolor{darkgreen}{slowly} for small changes of
-      $x$ and $z$
-    \item \textcolor{darkgreen}{Computationally cheap} to calculate
-
-    \item \textcolor{red}{Large} dimension ($2n + m$)
-    \item \textcolor{red}{Unsymmetric}
-  \end{itemize}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{itemize}
-    \item[] Matrix of the \textbf{Augmented System}
-      \[
-      \begin{aligned}
-        \begin{matrix}
-          (x) \quad \ & (\lambda)\ \ \\
-        \end{matrix} \\
-        \begin{bmatrix}
-          -  (X^k)^{-1} Z^k & A^T \\
-          A   & 0 \\
-        \end{bmatrix}
-      \end{aligned}
-      \]
-    
-    \item[]
-    \item \textcolor{darkgreen}{Symmetric} \textcolor{red}{indefinite}
-    \item There are \textcolor{darkgreen}{efficient} and
-      \textcolor{darkgreen}{well established} techniques and
-      preconditioners
-
-    \item Reduced dimension ($n + m$)
-    \item Small changes in $x$ or $z$ can result in
-      \textcolor{red}{large} changes
-  \end{itemize}
-  \end{onlyenv}
-
-  \begin{onlyenv}<3>
-    \begin{itemize}
-    \item[] Matrix of the \textbf{Normal Equations}
-      \[
-      \begin{aligned}
-        \begin{matrix}
-          (\lambda) \qquad \\
-        \end{matrix} \\
-        \begin{bmatrix}
-          A (Z^k)^{-1} X^k A^T \\
-        \end{bmatrix}
-      \end{aligned}
-      \]
-
-    \item[]
-    \item \textcolor{darkgreen}{Small} size ($m$)
-    \item \textcolor{darkgreen}{Symmetric Positive Definite}
-    \item There are \textcolor{darkgreen}{efficient} and
-      \textcolor{darkgreen}{well established} techniques and
-      preconditioners
-
-    \item Small changes in $x$ or $z$ can result in
-      \textcolor{red}{large} changes
-    \item \textcolor{red}{Cannot} be always used
-    \end{itemize}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{Motivation}
-
-  \[
-  J_k = 
-  \begin{bmatrix}
-    0   & A^T & I   \\
-    A   & 0   & 0   \\
-    Z^k & 0   & X^k \\
-  \end{bmatrix}
-  \]
-  \begin{itemize}
-  \item The unreduced matrix is the Jacobian of $F$ at $(\xysk{k})$
-
-  \item It changes slowly $\Rightarrow$ suitable for low rank
-    approximations
-
-  % \item An IP iteration may build several points where we can evaluate
-  %   $F$
-  %   \begin{itemize}
-  %   \item Predictor and corrector
-  %   \item Multiple centrality correctors
-  %   \end{itemize}
-
-  %   The cost of correctors is low, just a \color{darkgreen}{different
-  %     right-hand side}.
-
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Outline}
-\tableofcontents
-\end{frame}
-
-\section{Quasi-Newton approach in Interior Point Methods}
-
-\subsection{Quasi-Newton methods}
-
-\begin{frame}{Secant approximations}
-
-  \begin{onlyenv}<1>
-    \begin{center}
-      \includegraphics[height=0.8\textheight]{figures/secant.png}
-    \end{center}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2-3>
-    \begin{itemize}
-    \item<only@2-3> Let $F : \R^N \to \R^N$
-    % \item<only@2> The Newton method for finding ${\bar x}^* \in \R^N$
-    %   such that $F({\bar x}^*) = 0$ iteratively solves
-    %   \[
-    %   J({\bar x}^k) \Delta^k_x = - F({\bar x}^k)
-    %   \]
-    %   and performs ${\bar x}^{k + 1} = {\bar x}^k + \Delta_x^k$.
-      
-    \item<only@2-3> Secant methods use information from ${\bar x}^k$
-      and ${\bar x}^{k + 1}$ to compute a linear model
-      \[
-      M_{k + 1}(\bar x) = F({\bar x}^{k + 1}) + \textcolor{blue}{B_{k
-          + 1}} (\bar x - {\bar x}^{k + 1})
-      \]
-      which interpolates $F$ at ${\bar x}^k$ and ${\bar x}^{k + 1}$:
-      \[
-      \left\{
-          \begin{aligned}
-            \textcolor<3>{blue}{F({\bar x}^k)} & \textcolor<3>{blue}{=
-              F({\bar x}^{k + 1}) + B_{k + 1} ({\bar x}^k - {\bar
-                x}^{k + 1})} \\
-            F({\bar x}^{k + 1}) & = F({\bar x}^{k + 1}) + B_{k + 1}
-            ({\bar x}^{k + 1} - {\bar x}^{k + 1})
-          \end{aligned}
-        \right.
-      \]
-    % \item Secant methods use information from $x^k$ and $x^{k + 1}$ to
-    %   compute an approximation $B_{k + 1}$ to $J(x^{k + 1})$
-    %   \[
-    %   \left\{
-    %       \begin{aligned}
-    %         F(x^k) & = F(x^k) + B_{k + 1} (x^k - x^k) \\
-    %         \alert<3>{F(x^{k + 1})} & \alert<3>{= F(x^k) + B_{k + 1}
-    %           (x^{k + 1} - x^k)}
-    %       \end{aligned}
-    %     \right.
-    %   \]
-    \end{itemize}
-  \end{onlyenv}
-
-  \begin{onlyenv}<4>
-    \begin{itemize}
-    \item Secant equation
-      \[
-      \begin{aligned}
-          J_{k + 1}: & \quad B_{k + 1} s_k = y_k \\
-          J_{k + 1}^{-1}: & \quad H_{k + 1} y_k = s_k
-        \end{aligned}
-      \]
-      where \textcolor{blue}{$s_k = {\bar x}^{k + 1} - {\bar x}^k$}
-      and
-      \textcolor{blue}{$y_k = F({\bar x}^{k + 1}) - F({\bar x}^k)$}
-
-    \item[]
-
-    \item Least change secant updates
-      \[
-      B_{k + 1} = B_k + \frac{(y_k - B_k s_k) w_k^T}{w_k^T s_k}
-      \]
-      % \begin{itemize}
-      % \item Broyden approximations
-      % \item SR1
-      % \item BFGS
-      % \item Sparsity, etc.
-      % \end{itemize}
-
-    \item Use Sherman-Morrison-Woodbury to build $H_{k + 1}$
-    \end{itemize}
-
-    % {\scriptsize Martínez, J. M. (2000). \textbf{Practical quasi-Newton methods
-    %     for solving nonlinear systems} \textit{Journal of
-    %     Computational and Applied Mathematics}, 124(1–2), 97–121}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{The Broyden ``bad'' (BB) update}
-
-  \begin{onlyenv}<1>
-    \begin{itemize}
-    \item Computes a \textcolor{darkgreen}{rank-one update} to
-      generate an approximation $H_{k + 1}$ of $J_{k + 1}^{-1}$
-      \[
-      \begin{split}
-        H_{k + 1} & = H_k + \frac{(s_k - H_k y_k) y_k^T}{y_k^T y_k}
-        % & = \alt<2>{\alert{J_k^{-1}}}{H_k} + (s_k - H_k y_k) \cdot
-        % \frac{y_k^T}{y_k^T y_k} \\
-        % & = \alt<2>{\alert{J_k^{-1}}}{H_k} \left(I - \frac{y_k
-        %   y_k^T}{\rho_k}
-        % \right) + \frac{s_k y_k^T}{\rho_k} \\
-        = H_k V_k + \frac{s_k y_k^T}{\rho_k},
-      \end{split}
-      \]
-      where $V_k = \left(I - \frac{y_k y_k^T}{\rho_k} \right)$,
-      $\rho_k = y_k^T y_k$
-
-    \item $H_k$ is an \textcolor{darkgreen}{approximation} of
-      $J_k^{-1}$
-
-    \item After $\ell$ rank-one updates
-      \[
-      H_{k} v = H_{k - \ell} \left( \prod_{j = k -
-              \ell}^{k - 1} V_{j} \right) v + \sum_{i =
-          1}^{\ell} \left( \frac{s_{ k - i} y_{ k - i}^T}{\rho_{ k -
-              i}} \prod_{j = k - i + 1}^{k - 1} V_{j} \right) v
-      \]
-    \end{itemize}
-  \end{onlyenv}
-
-  % \begin{onlyenv}<3>
-  %   \begin{itemize}
-  %   \item After $\ell$ rank-1 updates
-  %     \[
-  %     \begin{split}
-  %       H_{k + \ell} &
-  %       % = H_{k + \ell - 1} V_{k + \ell - 1} +
-  %       % \frac{s_{k + \ell - 1}^{~} y_{k + \ell - 1}^T}{\rho_{k + \ell
-  %       %     - 1}} \\
-  %       % &
-  %       = H_k V_k \cdots V_{k + \ell - 1} + \sum_{j = 0}^{\ell - 1}
-  %       \left[ \left( \frac{s_{k + j}^{~} y_{k + j}^T}{\rho_{k + j}}
-  %         \right) V_{k + j + 1} \cdots V_{k + \ell - 1} \right]
-  %     \end{split}
-  %     \]
-  %   \item To compute $H_{k + \ell} u$, one only needs to store
-  %     \[
-  %     H_k \quad \text{and} \quad (s_{k + j}, y_{k + j}, \rho_{k +
-  %       j}),\quad j = 0, \dots, \ell - 1
-  %     \]
-  %     Memory size: $(2N + 1)\ell$ + size of $H_k$
-  %   \end{itemize}
-  % \end{onlyenv}
-
-\end{frame}
-
-% \begin{frame}{Computing $H_k v$}
-
-%   \begin{enumerate}
-%   \item[] \textbf{Data:} Let $H_{k - \ell} \in \R^{N \times N}$ and
-%     $(s_{k - j}, y_{k - j}, \rho_{k - j})$, for
-%     $j = 1, \dots, \ell$
-
-%     \textbf{Input:} Vector $v \in \R^N$
-
-%   \item $q \leftarrow v$
-
-%   \item Compute, for $j = 1, \dots, \ell$,
-%     \only<2>{\alert{\dotfill ($2N\ell$ mult. + $N\ell$ add.)}}
-%     \[
-%     \begin{aligned}
-%       \alpha_{j} & \leftarrow {y_{k - j}}^T q / \rho_{k - j}\\
-%       q & \leftarrow q - \alpha_{j} y_{k - j}
-%     \end{aligned}
-%     \]
-
-%   \item \alert<3>{$r \leftarrow H_{k - \ell} q$}
-%     \only<2>{\alert{\dotfill (It depends)}}
-
-%   \item Compute, for $i = 1, \dots, \ell$,
-%     \only<2>{\alert{\dotfill ($N\ell$ mult. + $N\ell$ add.)}}
-%     \[
-%     r \leftarrow r + \alpha_{i} s_{k - i}
-%     \]
-
-%   \item[] \textbf{Output:}
-%     $r = H_{k} v$ $\left( \approx J_{k}^{-1} v \right)$
-%   \end{enumerate}
-  
-% \end{frame}
-
-\begin{frame}{Computing $H_k v \approx J^{-1}_k v$}
-
-  \begin{enumerate}
-  \item[] \textbf{Data:} Let $H_{k - \ell} \in \R^{N \times N}$ and
-    $(s_{k - j}, y_{k - j}, \rho_{k - j})$, for
-    $j = 1, \dots, \ell$
-
-    \textbf{Input:} Vector $v \in \R^N$
-
-  \item $q \leftarrow v$
-
-  \item Compute, for $j = 1, \dots, \ell$,
-    \alert{\dotfill ($2N\ell$ mult. + $N\ell$ add.)}
-    \[
-    \begin{aligned}
-      \alpha_{j} & \leftarrow {y_{k - j}}^T q / \rho_{k - j} \\
-      q & \leftarrow q - \alpha_{j} y_{k - j}
-    \end{aligned}
-    \]
-
-  \item $r \leftarrow H_{k - \ell} q$ \alert{\dotfill (It depends)}
-
-  \item Compute, for $j = 1, \dots, \ell$,
-    \alert{\dotfill ($N\ell$ mult. + $N\ell$ add.)}
-    \[
-    r \leftarrow r + \alpha_{j} s_{k - j}
-    \]
-
-  \item[] \textbf{Output:}
-    $r = H_{k} v$ $\left( \approx J_{k}^{-1} v \right)$
-  \end{enumerate}
-  
-\end{frame}
-
-\subsection{Connection with IPMs}
-
-\begin{frame}{Quasi-Newton approaches in IPM}
-
-  \begin{itemize}
-  \item Compute cheap \textcolor{red}{preconditioners}
-    \begin{itemize}
-    \item {\scriptsize Bergamaschi, L., De Simone, V., di Serafino,
-        D., Martínez, Á. (2018). \textbf{BFGS-like updates of
-          constraint preconditioners for sequences of KKT linear
-          systems}. \textit{Numerical Linear Algebra with Applications}}
-    % \item {\scriptsize Gratton, S., Mercier, S., Tardieu, N., Vasseur,
-    %     X. (2016). \textbf{Limited memory preconditioners for
-    %       symmetric indefinite problems with application to structural
-    %       mechanics}. \textit{Numerical Linear Algebra with
-    %       Applications}, 23(5), 865–887}
-    \item {\scriptsize Morales, J. L., Nocedal,
-        J. (2000). \textbf{Automatic Preconditioning by Limited Memory
-          Quasi-Newton Updating}. \textit{SIAM Journal on
-          Optimization}, 10(4), 1079–1096}
-    \end{itemize}
-
-  \item Quasi-Newton strategies to reduce the cost of
-    \textcolor{red}{projections}
-    \begin{itemize}
-    \item {\scriptsize Dennis, J. E., Morshedi, A. M., Turner,
-        K. (1987). \textbf{A variable-metric variant of the Karmarkar
-          algorithm for linear programming}. \textit{Mathematical
-          Programming}, 39(1), 1–20}
-    \end{itemize}
-  \end{itemize}
-  
-\end{frame}
-
-\begin{frame}{Working with the Unreduced Matrix}
-  
-  We have that \alert{$N = 2n + m$},
-  $\alert{\bar x = (x, \lambda, z)}$,
-  \[
-  F(x, \lambda, x) =
-  \begin{bmatrix}
-   A^T y + s - c \\  A x - b \\ X Z e
-  \end{bmatrix}
-  \quad \text{and} \quad
-  J(x, \lambda, z) = 
-  \begin{bmatrix}
-    0 & A^T & I \\
-    A & 0   & 0 \\
-    Z & 0   & X \\
-  \end{bmatrix}    
-  \]
-
-  \begin{itemize}
-  \item If \textcolor{darkgreen}{$H_{k - \ell} = J_{k - \ell}^{-1}$},
-    then, at Step 3 of the BB algorithm
-    \[
-    J_{k - \ell} r = q
-    \]
-  \item Preconditioners or factorizations have
-    \textcolor{darkgreen}{already been computed at iteration $k - \ell$}
-  \item Augmented system or Normal equations can be used
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}{IP quasi-Newton direction}
-  
-  At iteration $k$, we want to compute
-  \[
-  \begin{bmatrix}
-    \dxk \\ \dyk \\ \dsk
-  \end{bmatrix}
-  =
-  H_{k} v
-  \qquad
-  \left(
-    \approx J_k
-    \begin{bmatrix}
-      \dxk \\ \dyk \\ \dsk
-    \end{bmatrix}
-    =
-    v
-  \right)
-  \]
-
-  This is equivalent to solving
-  \[
-  \begin{split}
-    \begin{bmatrix}
-      0   & A^T & I   \\
-      A   & 0   & 0   \\
-      Z^{k - \ell} & 0   & X^{k - \ell} \\
-    \end{bmatrix}
-    &
-    \begin{bmatrix}
-      \dxk \\ \dyk \\ \dsk
-    \end{bmatrix}
-    = v +
-    \\
-    & + \sum_{i =1}^{\ell} 
-    \only<1-2>{
-      \alpha_{i} \left(
-        \begin{bmatrix}
-          \alert<2>{0} & \alert<2>{A^T} & \alert<2>{I} \\
-          \alert<2>{A}   & \alert<2>{0}   & \alert<2>{0} \\
-          Z^{k - \ell}     & 0              & X^{k - \ell} \\
-        \end{bmatrix}
-        \only<1-2>{\alert<2>{s_{k - i}} - \alert<2>{y_{k - i}}}
-      \right)
-    }
-    \only<3>{
-      \alpha_i
-      \begin{bmatrix}
-        \alert{0} \\ \alert{0} \\ Z^{k - \ell} s_{k - i, x} + X^{k -
-          \ell} s_{k - i,z} - y_{k - i, \mu}
-      \end{bmatrix}
-    }
-  \end{split}
-  \]
-
-\end{frame}
-
-\begin{frame}{Using the structure of the matrix}
-  
-  \begin{itemize}
-  \item Least change secant updates preserve the structure of the
-    Jacobian
-  % \item If
-  %   $B_k = \begin{bmatrix}
-  %   - Q & A^T & I \\
-  %     A & 0   & 0 \\
-  %     M^1_{k} & M^2_{k} & M^3_{k}
-  %   \end{bmatrix}$ then $B_{k + 1} = \begin{bmatrix}
-  %     - Q & A^T & I \\
-  %     A & 0   & 0 \\
-  %     M^1_{k + 1} & \alert{M^2_{k + 1}} & M^3_{k + 1}
-  %   \end{bmatrix}$
-  
-  \item If we consider the update
-    \[
-    H_{k + 1} = J_k^{-1} + \frac{(s_k - H_k y_k)
-      \begin{bmatrix}
-        \alert{0} & y_{k, b} & y_{k, \mu}
-      \end{bmatrix}^T }{\alert{0} + y_{k, b}^T y_{k, b} + y_{k, \mu}^T
-      y_{k, \mu}}
-    \]
-    then
-    \[
-    B_{k + 1} =
-    \begin{bmatrix}
-      0 & A^T & I \\
-      A & 0   & 0 \\
-      M^1_{k + 1} & \alert{0} & M^3_{k + 1}
-    \end{bmatrix}
-    \]
-    (inspired in \textcolor{refs}{Schubert, 1970})
-
-  \item Only affects $\alert{\alpha_i}$ in the BB algorithm
-  \end{itemize}
-
-\end{frame}
-
-\section{Results}
-
-\subsection{Implementation}
-
-\begin{frame}{The algorithm}
-  
-  \begin{enumerate}
-  \item Set \alert{$\ell \leftarrow 0$}, $k \leftarrow 0$
-
-  \item \label{solve} Solve
-    \[
-    B_k
-    \begin{bmatrix}
-      \dxk \\ \dyk \\ \dsk
-    \end{bmatrix}
-    = v
-    \]
-    with different right hand sizes, if necessary, to compute the step
-    % $(\dxk, \dyk, \dsk)$
-
-  \item
-    $(\xysk{k + 1}) = (\xysk{k}) + (\alpha_P \dxk, \alpha_D \dyk,
-    \alpha_D \dsk)$
-
-  \item Compute $s_k$ and $y_k$
-
-  \item If \emph{decided to use quasi-Newton directions},
-    \alert{$\ell \leftarrow \ell + 1$}, otherwise,
-    \alert{$\ell \leftarrow 0$}
-
-  \item $k \leftarrow k + 1$ and go to step~\ref{solve}
-  \end{enumerate}
-
-\end{frame}
-
-\begin{frame}{Quasi-Newton steps and memory}
-
-  \begin{onlyenv}<1>
-    \begin{figure}[h]
-      \centering
-      \includegraphics{figures/mu_reduction.png}
-    \end{figure}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{itemize}
-    \item \alert{Slow decrease} in quasi-Newton steps is related to
-      \alert{small step-sizes}
-      
-    \item Multiple centrality correctors (\textcolor{refs}{Gondzio
-        1996, Colombo and Gondzio 2008}) are used to improve
-      quasi-Newton directions
-      
-    \end{itemize}
-
-    \begin{center}
-      \begin{tabular}{cc}
-        \includegraphics{figures/step_size_pre.png}
-        & \includegraphics{figures/step_size_pos.png} \\
-        Before & After
-      \end{tabular}
-    \end{center}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{How to decide?}
-  
-  A quasi-Newton step is performed at iteration $k + 1$ if
-  \textbf{both} criteria are satisfied at iteration $k$
 
   \begin{center}
-    \parbox{\textwidth}{ %
-      \begin{beamercolorbox}[wd=0.9\textwidth, center, sep=3pt,
-        rounded=true]{attention box}
-
-        \begin{itemize}
-        \item Memory criterion
-          \[
-          \ell \le \ell_\mathrm{max}
-          \]
-        \item Centrality criterion
-          \[
-          \begin{aligned}
-            \text{Iteration $k$ is a quasi-Newton iteration} & \quad \text{and} \\
-            {x^{k + 1}}^T z^{k + 1} \le \varepsilon_c \left( {x^k}^T z^k
-            \right) &
-          \end{aligned}
-          \]
-        \end{itemize}
-
-      \end{beamercolorbox}
-    }
-  \end{center}
-
-  Quasi-Newton steps \textbf{are always} performed after Newton steps.
-
+    \href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics{figures/by.png}} \end{center}
 \end{frame}
-
-\subsection{Numerical experiments}
-
-\begin{frame}{Numerical results}
-
-  \begin{onlyenv}<1>
-    \begin{itemize}
-    \item \hopdm\ was modified to use the quasi-Newton strategy
-
-    \item Mehrotra and Li's criteria to declare a problem solved
-      \[
-      \begin{aligned}
-        \frac{\mu}{1 + |c^T x|} \le 10^{-10}, \quad \frac{\|b -
-          Ax\|}{1 + \|b\|} \le 10^{-8}\quad \text{and} \\
-        \frac{\|c - A^T y - s\|}{1 + \|c\|} \le 10^{-8}\ (10^{-6}
-        \text{ for QPs})
-      \end{aligned}
-      \]
-      
-    \item $\ell_\mathrm{max} = 5$ and $\varepsilon_c = 0.99$
-      
-    \item \alert{Number of matrix factorizations} and \alert{total CPU
-        time} as performance measures
-
-    \end{itemize}
-  \end{onlyenv}
-  
-  \begin{onlyenv}<2>
-    Two comparisons
-    \begin{itemize}
-    \item Multiple centrality correctors \alert{are not} allowed in
-      Newton iterations
-      \begin{center}
-        \hopdm\ vs \qnipm
-      \end{center}
-
-    \item Multiple centrality correctors \alert{are} allowed in Newton
-      iterations
-      \begin{center}
-        \hopdm-mc vs \qnipmmc
-      \end{center}
-    \end{itemize}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{General test collections}
-  
-  \begin{onlyenv}<1>
-    Three collections of test problems were used in the first round of
-    tests:
-    \begin{itemize}
-    \item 96 LP problems from Netlib
-    \item 10 LP problems from Maros-Mészáros \texttt{misc}
-    \item 138 convex QP problems from Maros-Mészáros \texttt{qpdata}
-    \end{itemize}
-
-    \begin{alertblock}{}
-      \hopdm\ automatically selects between sparse Cholesky
-      factorization or $LDL^T$ factorization
-    \end{alertblock}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{figure}[h]
-      \centering
-      \includegraphics[height=0.85\textheight]{figures/hopdm-cf.png}
-      \includegraphics[height=0.85\textheight]{figures/hopdm-tt.png}
-    \end{figure}
-  \end{onlyenv}
-  
-  \begin{onlyenv}<3>
-    \begin{figure}[h]
-      \centering
-      \includegraphics[height=0.85\textheight]{figures/hopdmmc-cf.png}
-      \includegraphics[height=0.85\textheight]{figures/hopdmmc-tt.png}
-    \end{figure}
-  \end{onlyenv}
-
-\end{frame}
-
-\begin{frame}{QAPLIB collection}
-
-  \begin{onlyenv}<1>
-    \begin{itemize}
-    \item 39 problems from the linear relaxation of Quadratic
-      Assignment Problems (QAPLIB)
-
-    \item Columns: $1500$ -- $47000$
-
-    \item Rows: $900$ -- $11000$
-
-    \item Computing the Cholesky factorization is the most expensive
-      operation
-    \end{itemize}
-  \end{onlyenv}
-
-  \begin{onlyenv}<2>
-    \begin{figure}[h]
-      \centering
-      \includegraphics[height=0.85\textheight]{figures/hopdm-qap-tt.png}
-      \includegraphics[height=0.85\textheight]{figures/hopdmmc-qap-tt.png}
-    \end{figure}
-  \end{onlyenv}
-
-\end{frame}
-
-\section{Final remarks}
-
-\begin{frame}{Conclusions}
-
-  \begin{itemize}
-  \item Quasi-Newton updates provide the ability to use information
-    computed at IP iterations
-
-  \item Quasi-Newton approximations of the Unreduced Matrix
-    \textcolor{navy blue}{reduce the number of factorizations}
-
-  \item On problems where the computational \textcolor{navy blue}{cost
-      of factorization is much higher than the cost of the
-      backsolves}, the approach is also able to reduce CPU time
-
-  \item Suitable for \textcolor{navy blue}{matrix-free
-      implementations}, as $B_k$ (or $H_k$) is not built
-  \end{itemize}
-  
-\end{frame}
-
-\begin{frame}{Conclusions}
-  
-  \begin{figure}[h]
-    \centering
-    \includegraphics{figures/future.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}[plain, noframenumbering]
-  \vfill
-  \vfill
-  \vfill
-  \begin{center}
-    \Huge Thank you!
-  \end{center}
-  \vfill
-  \vfill
-  \begin{center} \url{fncsobral@uem.br} \end{center}
-  \begin{center}
-    \url{http://www.maths.ed.ac.uk/~gondzio/reports/qnIPM.html}
-    \includegraphics[width=0.4\textwidth]{figures/qrcode.png}
-  \end{center}
-\end{frame}
-
 \end{document}
