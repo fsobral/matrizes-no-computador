@@ -1,14 +1,13 @@
-# XXIX SEMAT - DMA - UEM
+# XXXII SEMAT - DMA - UEM
 
 ## Multiplicando matrizes no computador (em Julia)
 
-**Ministrante**: Francisco N. C. Sobral (DMA-UEM)  
-**Data**: 24 de outubro de 2018
+**Ministrantes**: Francisco N. C. Sobral e Júlia D. Guizardi (DMA-UEM)  
+**Data**: 04, 06, 08 de abril de 2022
 
 ## Instruções
 
-  1. Realize o teste, clicando [neste link](https://docs.google.com/forms/d/e/1FAIpQLSdsVjiWk9czGtvvwK8pDILRApJn8UAZ8SR-YJ-HSJse_4lg5w/viewform?usp=sf_link)
-  2. Caso se sinta preparado para o curso, [baixe os arquivos compactados](https://github.com/fsobral/xxixsemat/archive/master.zip) no seu computador.
+  1. Caso se sinta preparado para o curso, [baixe os arquivos compactados](https://github.com/fsobral/xxixsemat/archive/master.zip) no seu computador.
   
 ## Índice
 
@@ -22,6 +21,9 @@
   - [Parte 3](codes/parte3.ipynb)
     - Matrizes esparsas
     - Desafio
+  - [Parte 4](codes/parte4.ipynb)
+    - Resolução de sistemas lineares
+    - Fatoração LU
 
 <P ALIGN='CENTER'>
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
