@@ -1,0 +1,208 @@
+\documentclass[]{beamer}
+\usetheme{Boadilla}
+\usecolortheme{beaver}
+\usepackage[utf8]{inputenc}
+\usepackage[american]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{amsmath}
+
+\newcommand{\semitransp}[2][35]{{\color{fg!#1}#2}}
+\newcommand{\ttt}[1]{\texttt{#1}}
+\newcommand{\Na}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+
+% Requests the 'color' package
+\newcommand{\code}[1]{\colorbox[gray]{0.8}{\texttt{#1}}}
+
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{navy blue}{RGB}{0, 0, 99}
+\definecolor{rock blue}{RGB}{156, 170, 198}
+\definecolor{refs}{gray}{0.7}
+
+\setbeamercolor{attention box}{use={title in head/foot},%
+  fg=navy blue, %
+  bg=title in head/foot.bg
+}
+
+\author[Sobral]{Francisco N. C. Sobral e Júlia Guizardi\\ Universidade Estadual de Maringá}
+
+\date[XXIX SEMAT]{XXXII Semana da Matemática\\UEM, 2022}
+
+\title[Mat. Mult.]{Fatoração LU e resolução de sistemas}
+
+% Remove shadows in blocks
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+% Coisas invisiveis ficam meio transparentes
+\setbeamercovered{transparent=40} 
+
+% Desabilita os menuzinhos chatos
+\setbeamertemplate{navigation symbols}{} 
+
+% Faz com que as tabelas e figuras sejam numeradas
+%\setbeamertemplate{caption}[numbered]
+
+% Lists
+% Set circles, triangles and change colors
+\setbeamertemplate{itemize items}[triangle]
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{section in toc}[circle]
+\setbeamertemplate{subsection in toc}
+{
+  \leavevmode
+  \leftskip=2em
+  {\usebeamercolor[bg]{item projected}$\bullet$}
+  \hskip0.5em\inserttocsubsection\par
+}
+
+\setbeamercolor{item projected}{ %
+  fg=rock blue, %
+  bg=navy blue %
+}
+
+\setbeamercolor{item}{ %
+  fg=navy blue %
+}
+
+
+
+\begin{document}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\begin{frame}{Fatoração LU e resolução de sistemas}
+	Dado um sistema matricial da forma 
+	\begin{equation}\label{sistema}
+	Ax=b,
+	\end{equation}
+	podemos calcular uma matriz triangular inferior unitária $L$ e outra triangular superior $U,$ tal que $A=LU.$ Assim, para resolver (\ref{sistema}), operamos
+	$$Ly=b \text{  e  } Ux=y,$$
+	$$\Rightarrow Ax=LUx=Ly=b.$$
+\end{frame}
+
+\begin{frame}{Fatoração LU}
+	\begin{equation}
+	A=LU
+	\end{equation}
+	
+	$$
+	\begin{bmatrix}
+	a_{1,1} & \cdots &  & a_{1,n}\\
+	\vdots & \ddots  & & \vdots\\
+	& &  & \\
+	a_{n,1} & \cdots &  & a_{n,n}
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	1 & 0 & \cdots & 0\\
+	\ell_{2,1} & 1 & & \vdots\\
+	\vdots & & \ddots & 0\\
+	\ell_{n,1} & \cdots & \ell_{n,n-1} & 1
+	\end{bmatrix}\begin{bmatrix}
+	u_{1,1} & u_{1,2} & \cdots & u_{1,n}\\
+	0 & u_{2,2} & & \vdots\\
+	\vdots & & \ddots & \\
+	0 & \cdots & 0 & u_{n,n}
+	\end{bmatrix}
+	$$
+\end{frame}
+
+\begin{frame}{Exemplo 1}
+Seja a matriz $A,$
+$$\begin{bmatrix}6&18&22\\ 4&7&7\\ 2&2&2\end{bmatrix}$$
+Primeiramente, vamos calcular a fatoração $LU.$
+$$\ell_{2,2} = \dfrac{a_{2,1}}{a_{1,1}}= \dfrac{4}{6}$$
+Vamos operar $linha_2 = linha_2 - \ell_{2,2} \cdot linha_1,$
+$$\Rightarrow \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 2&2&2\end{bmatrix}.$$
+\end{frame}
+
+\begin{frame}{Exemplo 1}
+Vamos repetir o processo até zeramos toda a parte inferior da matriz.
+$$\ell_{3,1} = \dfrac{a_{3,1}}{a_{1,1}} = \dfrac{2}{6}$$
+Daí $linha_3 = linha_3 - \ell_{3,1} \cdot linha_1: $
+$$\Rightarrow \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&-4&-\frac{16}{3}\end{bmatrix}.$$
+\end{frame}
+
+\begin{frame}{Exemplo 1}
+Por fim, $$\ell_{3,2}  = \dfrac{-4}{-5}$$
+Daí $linha_3 = linha_3 - \ell_{3,2} \cdot linha_2: $
+$$\Rightarrow \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{bmatrix}.$$
+\end{frame}
+
+\begin{frame}{Exemplo 1}
+
+Com isso temos que $$L=\begin{bmatrix}1&0&0\\ \frac{4}{6}&1&0\\ \frac{2}{6}&\frac{4}{5}&1\end{bmatrix} U = \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{bmatrix}.$$ 
+\end{frame}
+
+\begin{frame}{Porque fazer?}
+Vantagens da fatoração:
+\begin{itemize}
+	\item Apesar de serem dois sistemas, tais sistemas são simples de serem resolvidos pela quantidade de entradas nulas, uma vez que as matrizes $L$ e $U$ são triangulares;
+	
+	\item  Caso seja necessário resolver outros sistemas lineares com a mesma matriz de coeficientes $A,$ mas diferentes valores para $b,$ podemos reaproveitar a fatoração de $A;$
+	
+	\item A fatoração $LU$ nos permite executar a mudança de uma coluna de $A$ de forma eficiente e sem ter que repetir toda a fatoração;
+	
+	\item Podemos fazer a fatoração usando pouco espaço da máquina.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Armazenamento}
+Note que é possível armazenar $L$ e $U$ em uma única matriz, consideremos $n =3:$
+$$L=\begin{bmatrix}1&0&0\\ \ell_{2,1}&1&0\\ \ell_{3,1}&\ell_{3,2}&1\end{bmatrix} U = \begin{bmatrix}u_{1,2}&u_{1,2}&u_{1,3}\\ 0&u_{2,2}&u_{2,3}\\ 0&0&u_{3,3}\end{bmatrix}$$ 
+O que podemos fazer é criar uma única matriz da forma:
+$$\begin{bmatrix}u_{1,2}&u_{1,2}&u_{1,3}\\ \ell_{2,1}&u_{2,2}&u_{2,3}\\ \ell_{3,1}&\ell_{3,2}&u_{3,3}\end{bmatrix}$$ 
+Isso é possível já que $L$ é uma matriz unitária.
+\end{frame}
+
+
+
+\begin{frame}{Resolução de sistema}
+	Com a fatoração em mãos, basta encontramos $y$ em
+	$$Ly=b. $$
+	E depois, encontramos $x,$
+	$$ Ux=y.$$
+\end{frame}
+
+\begin{frame}{Exemplo 2}
+Seja o sistema matricial dado por $Ax=b,$
+$$\begin{bmatrix}6&18&22\\ 4&7&7\\ 2&2&2\end{bmatrix}\cdot \begin{bmatrix}x_1\\ x_2\\ x_3\end{bmatrix}=\begin{bmatrix}12\\ 24\\ 12\end{bmatrix}.$$
+
+Já calculamos a fatoração $LU$ da matriz $A$ no Exemplo 1. Agora, vamos resolver $Ly=b:$
+
+$$\begin{bmatrix}1&0&0\\ \frac{4}{6}&1&0\\ \frac{2}{6}&\frac{4}{5}&1\end{bmatrix}\cdot \begin{bmatrix}y_1\\ y_2\\ y_3\end{bmatrix}=\begin{bmatrix}12\\ 24\\ 12\end{bmatrix}$$
+
+\end{frame}
+
+\begin{frame}{Exemplo 2}
+É fácil ver que $y_1=12,$ os outros valores calculamos substituindo. Observe que são contas simples, e obtemos $$y=\begin{bmatrix}12\\ 16\\ -\frac{24}{5}\end{bmatrix}.$$
+
+Por fim, vamos resolver $Ux=y.$
+$$\begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{bmatrix}\cdot \begin{bmatrix}x_1\\ x_2\\ x_3\end{bmatrix}=\begin{bmatrix}12\\ 16\\ -\frac{24}{5}\end{bmatrix}$$
+\end{frame}
+
+
+\begin{frame}{Exemplo 2}
+Fazendo a substituição encontramos  $$x=\begin{bmatrix}6\\ 6\\ -6\end{bmatrix}.$$
+\end{frame}
+
+\begin{frame}{Pivoteamento}
+
+\end{frame}
+
+\begin{frame}[plain, noframenumbering]
+\vfill
+\vfill
+\vfill
+\begin{center}
+	\Huge Obrigada!
+\end{center}
+\vfill
+\vfill
+
+\end{frame}
+\end{document}
