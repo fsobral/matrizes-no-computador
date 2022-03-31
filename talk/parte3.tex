@@ -25,7 +25,7 @@
   bg=title in head/foot.bg
 }
 
-\author[Sobral]{Francisco N. C. Sobral e Júlia Guizardi\\ Universidade Estadual de Maringá}
+\author[Sobral, Guizardi]{Francisco N. C. Sobral e Júlia Guizardi\\ Universidade Estadual de Maringá}
 
 \date[XXIX SEMAT]{XXXII Semana da Matemática\\UEM, 2022}
 
@@ -71,6 +71,20 @@
 
 \begin{frame}[plain]
 \titlepage
+\end{frame}
+
+\begin{frame}{Pergunta de 1 milhão}
+
+  Queremos resolver
+  \[
+    Ax = b
+  \]
+  O que é melhor?
+  \begin{itemize}
+  \item Calcular $x = A^{-1} b$
+  \item Calcular $A = LU$ e resolver $LUx = b$ (Comando \code{A \textbackslash\ b})
+  \end{itemize}
+  
 \end{frame}
 
 \begin{frame}{Fatoração LU e resolução de sistemas}
@@ -137,7 +151,7 @@ $$\Rightarrow \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{
 Com isso temos que $$L=\begin{bmatrix}1&0&0\\ \frac{4}{6}&1&0\\ \frac{2}{6}&\frac{4}{5}&1\end{bmatrix} U = \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{bmatrix}.$$ 
 \end{frame}
 
-\begin{frame}{Porque fazer?}
+\begin{frame}{Por que fazer?}
 Vantagens da fatoração:
 \begin{itemize}
 	\item Apesar de serem dois sistemas, tais sistemas são simples de serem resolvidos pela quantidade de entradas nulas, uma vez que as matrizes $L$ e $U$ são triangulares;
@@ -203,6 +217,8 @@ Fazendo a substituição encontramos  $$x=\begin{bmatrix}6\\ 6\\ -6\end{bmatrix}
 \end{center}
 \vfill
 \vfill
+\begin{center}
+    \href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics{figures/by.png}} \end{center}
 
 \end{frame}
 \end{document}
