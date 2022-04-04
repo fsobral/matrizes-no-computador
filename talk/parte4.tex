@@ -21,8 +21,8 @@
 \definecolor{refs}{gray}{0.7}
 
 \setbeamercolor{attention box}{use={title in head/foot},%
-  fg=navy blue, %
-  bg=title in head/foot.bg
+	fg=navy blue, %
+	bg=title in head/foot.bg
 }
 
 \author[Sobral, Guizardi]{Francisco N. C. Sobral e Júlia Guizardi\\ Universidade Estadual de Maringá}
@@ -50,78 +50,78 @@
 \setbeamertemplate{section in toc}[circle]
 \setbeamertemplate{subsection in toc}
 {
-  \leavevmode
-  \leftskip=2em
-  {\usebeamercolor[bg]{item projected}$\bullet$}
-  \hskip0.5em\inserttocsubsection\par
+	\leavevmode
+	\leftskip=2em
+	{\usebeamercolor[bg]{item projected}$\bullet$}
+	\hskip0.5em\inserttocsubsection\par
 }
 
 \setbeamercolor{item projected}{ %
-  fg=rock blue, %
-  bg=navy blue %
+	fg=rock blue, %
+	bg=navy blue %
 }
 
 \setbeamercolor{item}{ %
-  fg=navy blue %
+	fg=navy blue %
 }
 
 
 
 \begin{document}
-
-\begin{frame}[plain]
-\titlepage
+	
+	\begin{frame}[plain]
+	\titlepage
 \end{frame}
 
 \begin{frame}{Pergunta de 1 milhão}
 
-  Queremos resolver
-  \[
-    Ax = b
-  \]
-  O que é melhor?
-  \begin{itemize}
-  \item Calcular $x = A^{-1} b$
-  \item Calcular $A = LU$ e resolver $LUx = b$ (Comando \code{A \textbackslash\ b})
-  \end{itemize}
-  
+Queremos resolver
+\[
+Ax = b
+\]
+O que é melhor?
+\begin{itemize}
+	\item Calcular $x = A^{-1} b$
+	\item Calcular $A = LU$ e resolver $LUx = b$ (Comando \code{A \textbackslash\ b})
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}{Fatoração LU e resolução de sistemas}
-	Dado um sistema matricial da forma 
-	\begin{equation}\label{sistema}
-	Ax=b,
-	\end{equation}
-	podemos calcular uma matriz triangular inferior unitária $L$ e outra triangular superior $U,$ tal que $A=LU.$ Assim, para resolver (\ref{sistema}), operamos
-	$$Ly=b \text{  e  } Ux=y,$$
-	$$\Rightarrow Ax=LUx=Ly=b.$$
+Dado um sistema matricial da forma 
+\begin{equation}\label{sistema}
+Ax=b,
+\end{equation}
+podemos calcular uma matriz triangular inferior unitária $L$ e outra triangular superior $U,$ tal que $A=LU.$ Assim, para resolver (\ref{sistema}), operamos
+$$Ly=b \text{  e  } Ux=y,$$
+$$\Rightarrow Ax=LUx=Ly=b.$$
 \end{frame}
 
 \begin{frame}{Fatoração LU}
-	\begin{equation}
-	A=LU
-	\end{equation}
-	
-	$$
-	\begin{bmatrix}
-	a_{1,1} & \cdots &  & a_{1,n}\\
-	\vdots & \ddots  & & \vdots\\
-	& &  & \\
-	a_{n,1} & \cdots &  & a_{n,n}
-	\end{bmatrix}
-	=
-	\begin{bmatrix}
-	1 & 0 & \cdots & 0\\
-	\ell_{2,1} & 1 & & \vdots\\
-	\vdots & & \ddots & 0\\
-	\ell_{n,1} & \cdots & \ell_{n,n-1} & 1
-	\end{bmatrix}\begin{bmatrix}
-	u_{1,1} & u_{1,2} & \cdots & u_{1,n}\\
-	0 & u_{2,2} & & \vdots\\
-	\vdots & & \ddots & \\
-	0 & \cdots & 0 & u_{n,n}
-	\end{bmatrix}
-	$$
+\begin{equation}
+A=LU
+\end{equation}
+
+$$
+\begin{bmatrix}
+a_{1,1} & \cdots &  & a_{1,n}\\
+\vdots & \ddots  & & \vdots\\
+& &  & \\
+a_{n,1} & \cdots &  & a_{n,n}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & \cdots & 0\\
+\ell_{2,1} & 1 & & \vdots\\
+\vdots & & \ddots & 0\\
+\ell_{n,1} & \cdots & \ell_{n,n-1} & 1
+\end{bmatrix}\begin{bmatrix}
+u_{1,1} & u_{1,2} & \cdots & u_{1,n}\\
+0 & u_{2,2} & & \vdots\\
+\vdots & & \ddots & \\
+0 & \cdots & 0 & u_{n,n}
+\end{bmatrix}
+$$
 \end{frame}
 
 \begin{frame}{Exemplo 1}
@@ -154,13 +154,13 @@ Com isso temos que $$L=\begin{bmatrix}1&0&0\\ \frac{4}{6}&1&0\\ \frac{2}{6}&\fra
 \begin{frame}{Por que fazer?}
 Vantagens da fatoração:
 \begin{itemize}
-	\item Apesar de serem dois sistemas, tais sistemas são simples de serem resolvidos pela quantidade de entradas nulas, uma vez que as matrizes $L$ e $U$ são triangulares;
-	
-	\item  Caso seja necessário resolver outros sistemas lineares com a mesma matriz de coeficientes $A,$ mas diferentes valores para $b,$ podemos reaproveitar a fatoração de $A;$
-	
-	\item A fatoração $LU$ nos permite executar a mudança de uma coluna de $A$ de forma eficiente e sem ter que repetir toda a fatoração;
-	
-	\item Podemos fazer a fatoração usando pouco espaço da máquina.
+\item Apesar de serem dois sistemas, tais sistemas são simples de serem resolvidos pela quantidade de entradas nulas, uma vez que as matrizes $L$ e $U$ são triangulares;
+
+\item  Caso seja necessário resolver outros sistemas lineares com a mesma matriz de coeficientes $A,$ mas diferentes valores para $b,$ podemos reaproveitar a fatoração de $A;$
+
+\item A fatoração $LU$ nos permite executar a mudança de uma coluna de $A$ de forma eficiente e sem ter que repetir toda a fatoração;
+
+\item Podemos fazer a fatoração usando pouco espaço da máquina.
 \end{itemize}
 
 \end{frame}
@@ -176,10 +176,10 @@ Isso é possível já que $L$ é uma matriz unitária.
 
 
 \begin{frame}{Resolução de sistema}
-	Com a fatoração em mãos, basta encontramos $y$ em
-	$$Ly=b. $$
-	E depois, encontramos $x,$
-	$$ Ux=y.$$
+Com a fatoração em mãos, basta encontramos $y$ em
+$$Ly=b. $$
+E depois, encontramos $x,$
+$$ Ux=y.$$
 \end{frame}
 
 \begin{frame}{Exemplo 2}
@@ -205,6 +205,22 @@ Fazendo a substituição encontramos  $$x=\begin{bmatrix}6\\ 6\\ -6\end{bmatrix}
 \end{frame}
 
 \begin{frame}{Pivoteamento}
+Vejamos o exemplo abaixo:
+	$$A=\begin{bmatrix}0&1&7\\ 12&-9&48\\ 11&31&-9\end{bmatrix}$$
+	
+	 Realizamos a seguinte operação: 
+	 
+	 $$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \begin{bmatrix}12&-9&48\\ 0&1&7\\ 11&31&-9\end{bmatrix} \Rightarrow \begin{bmatrix}12&-9&48\\ 0&1&7\\ 11&31&-9\end{bmatrix}.$$ 
+	 
+	 Chamamos essa matriz de $P$. Assim, temos:	$$PA=LU$$
+	
+\end{frame}
+
+\begin{frame}{Pivoteamento}
+	Podemos substituir a matriz $P$ por um vetor $p:$
+	$$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \Rightarrow \begin{bmatrix}2\\ 1\\ 3\end{bmatrix} $$
+	
+	Indicando a troca da primeira linha pela segunda com o vetor $p$ utilizamos apenas um vetor, e podemos construir um algoritmo mais eficiente.
 
 \end{frame}
 
@@ -213,12 +229,12 @@ Fazendo a substituição encontramos  $$x=\begin{bmatrix}6\\ 6\\ -6\end{bmatrix}
 \vfill
 \vfill
 \begin{center}
-	\Huge Obrigada!
+\Huge Obrigada!
 \end{center}
 \vfill
 \vfill
 \begin{center}
-    \href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics{figures/by.png}} \end{center}
+\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics{figures/by.png}} \end{center}
 
 \end{frame}
 \end{document}
