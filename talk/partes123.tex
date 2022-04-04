@@ -24,11 +24,19 @@
   bg=title in head/foot.bg
 }
 
-\author[Sobral]{Francisco N. C. Sobral\\ Universidade Estadual de Maringá}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
 
-\date[XXIX SEMAT]{XXIX Semana da Matemática\\UEM, 2018}
+\author[Sobral, Guizardi]{Francisco N. C. Sobral \and Júlia Demori Guizardi\\ Universidade Estadual de Maringá}
 
-\title[Mat. Mult.]{Multiplicando matrizes no computador}
+\date[XXXII SEMAT]{XXXII Semana da Matemática\\UEM, 2022}
+
+\title[Mat. Mult.]{Operações com matrizes no computador}
 
 % Remove shadows in blocks
 \setbeamertemplate{blocks}[rounded][shadow=false]
@@ -188,7 +196,7 @@
 \begin{frame}[fragile]{Vetores}
 
   \begin{itemize}
-  \item Comando \code{Vector\{Float64\}(n)}
+  \item Comando \code{Vector\{Float64\}(\alert{undef}, n)}
 
   \item Reserva um espaço na memória de tamanho
     $n \cdot$\verb+sizeof(Float64)+ e retorna o seu \textbf{endereço}
@@ -217,7 +225,7 @@
 \begin{frame}[fragile]{Matrizes}
   
   \begin{itemize}
-  \item Comando \code{Array\{Float64\}(m, n)}
+  \item Comando \code{Array\{Float64\}(\alert{undef}, m, n)}
 
   \item Reserva um espaço na memória de tamanho
     $mn\cdot$\verb+sizeof(Float64)+ e retorna o seu \textbf{endereço}
