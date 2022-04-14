@@ -128,8 +128,8 @@ $$
 Seja a matriz $A,$
 $$\begin{bmatrix}6&18&22\\ 4&7&7\\ 2&2&2\end{bmatrix}$$
 Primeiramente, vamos calcular a fatoração $LU.$
-$$\ell_{2,2} = \dfrac{a_{2,1}}{a_{1,1}}= \dfrac{4}{6}$$
-Vamos operar $linha_2 = linha_2 - \ell_{2,2} \cdot linha_1,$
+$$\ell_{2,1} = \dfrac{a_{2,1}}{a_{1,1}}= \dfrac{4}{6}$$
+Vamos operar $linha_2 = linha_2 - \ell_{2,1} \cdot linha_1,$
 $$\Rightarrow \begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 2&2&2\end{bmatrix}.$$
 \end{frame}
 
@@ -173,6 +173,25 @@ $$\begin{bmatrix}u_{1,2}&u_{1,2}&u_{1,3}\\ \ell_{2,1}&u_{2,2}&u_{2,3}\\ \ell_{3,
 Isso é possível já que $L$ é uma matriz unitária.
 \end{frame}
 
+\begin{frame}{Pivoteamento}
+Vejamos o exemplo abaixo:
+$$A=\begin{bmatrix}0&1&7\\ 12&-9&48\\ 11&31&-9\end{bmatrix}$$
+
+Realizamos a seguinte operação: 
+
+$$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \begin{bmatrix}0&1&7\\ 12&-9&48\\ 11&31&-9\end{bmatrix} \Rightarrow \begin{bmatrix}12&-9&48\\ 0&1&7\\ 11&31&-9\end{bmatrix}.$$ 
+
+Chamamos essa matriz de $P$. Assim, temos:	$$PA=LU$$
+
+\end{frame}
+
+\begin{frame}{Pivoteamento}
+Podemos substituir a matriz $P$ por um vetor $p:$
+$$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \Rightarrow \begin{bmatrix}2\\ 1\\ 3\end{bmatrix} $$
+
+Indicando a troca da primeira linha pela segunda com o vetor $p$ utilizamos apenas um vetor, e podemos construir um algoritmo mais eficiente.
+
+\end{frame}
 
 
 \begin{frame}{Resolução de sistema}
@@ -204,25 +223,6 @@ $$\begin{bmatrix}6&18&22\\ 0&-5&-\frac{23}{3}\\ 0&0&\frac{4}{5}\end{bmatrix}\cdo
 Fazendo a substituição encontramos  $$x=\begin{bmatrix}6\\ 6\\ -6\end{bmatrix}.$$
 \end{frame}
 
-\begin{frame}{Pivoteamento}
-Vejamos o exemplo abaixo:
-	$$A=\begin{bmatrix}0&1&7\\ 12&-9&48\\ 11&31&-9\end{bmatrix}$$
-	
-	 Realizamos a seguinte operação: 
-	 
-	 $$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \begin{bmatrix}12&-9&48\\ 0&1&7\\ 11&31&-9\end{bmatrix} \Rightarrow \begin{bmatrix}12&-9&48\\ 0&1&7\\ 11&31&-9\end{bmatrix}.$$ 
-	 
-	 Chamamos essa matriz de $P$. Assim, temos:	$$PA=LU$$
-	
-\end{frame}
-
-\begin{frame}{Pivoteamento}
-	Podemos substituir a matriz $P$ por um vetor $p:$
-	$$\begin{bmatrix}0&1&0\\ 1&0&0\\ 0&0&1\end{bmatrix} \Rightarrow \begin{bmatrix}2\\ 1\\ 3\end{bmatrix} $$
-	
-	Indicando a troca da primeira linha pela segunda com o vetor $p$ utilizamos apenas um vetor, e podemos construir um algoritmo mais eficiente.
-
-\end{frame}
 
 \begin{frame}[plain, noframenumbering]
 \vfill
